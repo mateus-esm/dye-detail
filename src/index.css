@@ -16,7 +16,7 @@
   :root {
     /* Duda Hair APP — Light theme (sober, low saturation) */
     --background: 30 8% 97%;
-    --foreground: 20 10% 12%;
+    --foreground: 20 14% 10%;
 
     --card: 0 0% 100%;
     --card-foreground: 20 10% 12%;
@@ -32,7 +32,7 @@
     --secondary-foreground: 20 10% 12%;
 
     --muted: 30 6% 94%;
-    --muted-foreground: 20 5% 42%;
+    --muted-foreground: 20 8% 32%;
 
     --accent: 38 60% 55%;
     --accent-foreground: 20 10% 12%;
@@ -46,7 +46,7 @@
     --warning: 35 70% 50%;
     --warning-foreground: 0 0% 100%;
 
-    --border: 30 6% 88%;
+    --border: 30 6% 84%;
     --input: 30 6% 92%;
     --ring: 18 70% 50%;
 
@@ -61,7 +61,7 @@
   .dark {
     /* Dark theme — sober #141414 */
     --background: 0 0% 8%;
-    --foreground: 30 6% 92%;
+    --foreground: 30 8% 96%;
 
     --card: 0 0% 11%;
     --card-foreground: 30 6% 92%;
@@ -77,7 +77,7 @@
     --secondary-foreground: 30 6% 92%;
 
     --muted: 0 0% 13%;
-    --muted-foreground: 30 4% 60%;
+    --muted-foreground: 30 5% 68%;
 
     --accent: 38 55% 55%;
     --accent-foreground: 0 0% 8%;
@@ -109,19 +109,27 @@
 
   body {
     @apply bg-background text-foreground;
-    font-family: 'Neue Montreal', 'Inter', system-ui, sans-serif;
-    font-weight: 300;
+    font-family: 'Inter', system-ui, sans-serif;
+    font-weight: 400;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
     font-feature-settings: "ss01", "cv11";
   }
 
   h1, h2, h3, h4, h5, h6 {
-    font-family: 'Neue Montreal', 'Space Grotesk', sans-serif;
-    letter-spacing: -0.02em;
-    font-weight: 400;
+    font-family: 'Inter', system-ui, sans-serif;
+    font-weight: 600;
+    letter-spacing: -0.015em;
   }
 }
 
 @layer utilities {
+  .font-display {
+    font-family: 'Neue Montreal', 'Inter', sans-serif;
+    font-weight: 300;
+    letter-spacing: -0.02em;
+  }
   .text-gradient-brand {
     background: var(--gradient-brand);
     -webkit-background-clip: text;
