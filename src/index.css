@@ -6,41 +6,49 @@
 
 @layer base {
   :root {
-    --background: 30 20% 97%;
-    --foreground: 20 20% 10%;
+    /* Duda Hair APP — Solo Ventures palette
+       Background #141414, accents #FF481E → #F2CE1F gradient */
+    --background: 0 0% 8%;
+    --foreground: 0 0% 98%;
 
-    --card: 30 15% 99%;
-    --card-foreground: 20 20% 10%;
+    --card: 0 0% 11%;
+    --card-foreground: 0 0% 98%;
 
-    --popover: 30 15% 99%;
-    --popover-foreground: 20 20% 10%;
+    --popover: 0 0% 11%;
+    --popover-foreground: 0 0% 98%;
 
-    --primary: 25 80% 52%;
-    --primary-foreground: 0 0% 100%;
+    --primary: 14 100% 56%;             /* #FF481E */
+    --primary-foreground: 0 0% 8%;
+    --primary-glow: 50 88% 54%;         /* #F2CE1F */
 
-    --secondary: 30 15% 93%;
-    --secondary-foreground: 20 20% 15%;
+    --secondary: 0 0% 15%;
+    --secondary-foreground: 0 0% 98%;
 
-    --muted: 30 10% 94%;
-    --muted-foreground: 20 10% 45%;
+    --muted: 0 0% 14%;
+    --muted-foreground: 0 0% 62%;
 
-    --accent: 160 45% 45%;
-    --accent-foreground: 0 0% 100%;
+    --accent: 50 88% 54%;               /* yellow accent */
+    --accent-foreground: 0 0% 8%;
 
-    --destructive: 0 72% 51%;
-    --destructive-foreground: 0 0% 100%;
+    --destructive: 0 72% 55%;
+    --destructive-foreground: 0 0% 98%;
 
-    --border: 30 15% 88%;
-    --input: 30 15% 88%;
-    --ring: 25 80% 52%;
+    --success: 142 65% 45%;
+    --success-foreground: 0 0% 98%;
 
-    --radius: 0.75rem;
+    --warning: 45 93% 55%;
+    --warning-foreground: 0 0% 8%;
 
-    --warning: 45 93% 47%;
-    --warning-foreground: 20 20% 10%;
+    --border: 0 0% 18%;
+    --input: 0 0% 16%;
+    --ring: 14 100% 56%;
 
-    --success: 160 45% 45%;
-    --success-foreground: 0 0% 100%;
+    --radius: 0.875rem;
+
+    --gradient-brand: linear-gradient(90deg, hsl(14 100% 56%) 0%, hsl(28 100% 52%) 50%, hsl(50 88% 54%) 100%);
+    --gradient-card: linear-gradient(180deg, hsl(0 0% 13%), hsl(0 0% 9%));
+    --shadow-brand: 0 12px 40px -12px hsl(14 100% 56% / 0.45);
+    --shadow-elevated: 0 8px 30px -8px hsl(0 0% 0% / 0.6);
 
     --sidebar-background: 0 0% 98%;
     --sidebar-foreground: 240 5.3% 26.1%;
@@ -53,34 +61,6 @@
   }
 
   .dark {
-    --background: 20 15% 8%;
-    --foreground: 30 15% 95%;
-
-    --card: 20 15% 12%;
-    --card-foreground: 30 15% 95%;
-
-    --popover: 20 15% 12%;
-    --popover-foreground: 30 15% 95%;
-
-    --primary: 25 80% 55%;
-    --primary-foreground: 0 0% 100%;
-
-    --secondary: 20 12% 18%;
-    --secondary-foreground: 30 15% 90%;
-
-    --muted: 20 12% 18%;
-    --muted-foreground: 30 10% 55%;
-
-    --accent: 160 45% 40%;
-    --accent-foreground: 0 0% 100%;
-
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 0 0% 100%;
-
-    --border: 20 12% 22%;
-    --input: 20 12% 22%;
-    --ring: 25 80% 55%;
-
     --sidebar-background: 240 5.9% 10%;
     --sidebar-foreground: 240 4.8% 95.9%;
     --sidebar-primary: 224.3 76.3% 48%;
@@ -100,9 +80,29 @@
   body {
     @apply bg-background text-foreground;
     font-family: 'Inter', sans-serif;
+    font-feature-settings: "ss01", "cv11";
   }
 
   h1, h2, h3, h4, h5, h6 {
     font-family: 'Space Grotesk', sans-serif;
+    letter-spacing: -0.02em;
+  }
+}
+
+@layer utilities {
+  .text-gradient-brand {
+    background: var(--gradient-brand);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  .bg-gradient-brand {
+    background: var(--gradient-brand);
+  }
+  .shadow-brand {
+    box-shadow: var(--shadow-brand);
+  }
+  .shadow-elevated {
+    box-shadow: var(--shadow-elevated);
   }
 }

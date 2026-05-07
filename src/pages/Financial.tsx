@@ -1,129 +1,118 @@
 import { useState, useEffect } from "react";
-import { format, startOfWeek, endOfWeek, startOfMonth, endOfMonth } from "date-fns";
+import { format, startOfMonth, endOfMonth, eachDayOfInterval, parseISO } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { DollarSign, TrendingUp, Calendar, Wallet } from "lucide-react";
+import { Card, CardContent } from "@/components/ui/card";
+import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid } from "recharts";
+import { TrendingUp, AlertCircle, CheckCircle2 } from "lucide-react";
+import { BrandLogo } from "@/components/BrandLogo";
 
 const Financial = () => {
   const { user } = useAuth();
-  const [dailyTotal, setDailyTotal] = useState(0);
-  const [weeklyTotal, setWeeklyTotal] = useState(0);
-  const [monthlyTotal, setMonthlyTotal] = useState(0);
-  const [dailyCount, setDailyCount] = useState(0);
-  const [weeklyCount, setWeeklyCount] = useState(0);
-  const [monthlyCount, setMonthlyCount] = useState(0);
+  const [appts, setAppts] = useState<any[]>([]);
 
-  useEffect(() => {
-    if (user) fetchFinancials();
-  }, [user]);
+  useEffect(() => { if (user) fetchData(); }, [user]);
 
-  const fetchFinancials = async () => {
-    const today = new Date();
-    const todayStr = format(today, "yyyy-MM-dd");
-    const weekStart = format(startOfWeek(today, { weekStartsOn: 1 }), "yyyy-MM-dd");
-    const weekEnd = format(endOfWeek(today, { weekStartsOn: 1 }), "yyyy-MM-dd");
-    const monthStart = format(startOfMonth(today), "yyyy-MM-dd");
-    const monthEnd = format(endOfMonth(today), "yyyy-MM-dd");
-
-    // Daily
-    const { data: daily } = await supabase
+  const fetchData = async () => {
+    const monthStart = format(startOfMonth(new Date()), "yyyy-MM-dd");
+    const monthEnd = format(endOfMonth(new Date()), "yyyy-MM-dd");
+    const { data } = await supabase
       .from("appointments")
-      .select("price")
-      .eq("appointment_date", todayStr)
-      .eq("status", "atendido");
-
-    if (daily) {
-      setDailyTotal(daily.reduce((s, a) => s + Number(a.price), 0));
-      setDailyCount(daily.length);
-    }
-
-    // Weekly
-    const { data: weekly } = await supabase
-      .from("appointments")
-      .select("price")
-      .gte("appointment_date", weekStart)
-      .lte("appointment_date", weekEnd)
-      .eq("status", "atendido");
-
-    if (weekly) {
-      setWeeklyTotal(weekly.reduce((s, a) => s + Number(a.price), 0));
-      setWeeklyCount(weekly.length);
-    }
-
-    // Monthly
-    const { data: monthly } = await supabase
-      .from("appointments")
-      .select("price")
+      .select("appointment_date, price, status, payment_status")
       .gte("appointment_date", monthStart)
-      .lte("appointment_date", monthEnd)
-      .eq("status", "atendido");
-
-    if (monthly) {
-      setMonthlyTotal(monthly.reduce((s, a) => s + Number(a.price), 0));
-      setMonthlyCount(monthly.length);
-    }
+      .lte("appointment_date", monthEnd);
+    setAppts(data || []);
   };
 
-  const cards = [
-    {
-      title: "Hoje",
-      icon: DollarSign,
-      total: dailyTotal,
-      count: dailyCount,
-      subtitle: format(new Date(), "dd 'de' MMMM", { locale: ptBR }),
-    },
-    {
-      title: "Esta Semana",
-      icon: TrendingUp,
-      total: weeklyTotal,
-      count: weeklyCount,
-      subtitle: `${format(startOfWeek(new Date(), { weekStartsOn: 1 }), "dd/MM")} - ${format(endOfWeek(new Date(), { weekStartsOn: 1 }), "dd/MM")}`,
-    },
-    {
-      title: "Este Mês",
-      icon: Calendar,
-      total: monthlyTotal,
-      count: monthlyCount,
-      subtitle: format(new Date(), "MMMM yyyy", { locale: ptBR }),
-    },
-  ];
+  const completed = appts.filter((a) => a.status === "atendido");
+  const grossRevenue = completed.reduce((s, a) => s + Number(a.price), 0);
+  const pending = completed.filter((a) => a.payment_status === "pendente").reduce((s, a) => s + Number(a.price), 0);
+  const totalServices = completed.length;
+
+  // chart data: revenue per day
+  const days = eachDayOfInterval({ start: startOfMonth(new Date()), end: endOfMonth(new Date()) });
+  const chartData = days.map((d) => {
+    const ds = format(d, "yyyy-MM-dd");
+    const total = completed
+      .filter((a) => a.appointment_date === ds)
+      .reduce((s, a) => s + Number(a.price), 0);
+    return { day: format(d, "dd"), value: Number(total.toFixed(2)) };
+  });
 
   return (
-    <div className="pb-20">
-      <header className="sticky top-0 z-40 border-b bg-card px-4 py-3">
-        <div className="mx-auto max-w-lg">
-          <h1 className="text-lg font-bold">💰 Financeiro</h1>
-          <p className="text-sm text-muted-foreground">Resumo do seu faturamento</p>
+    <div className="pb-24">
+      <header className="sticky top-0 z-40 border-b border-border/60 bg-background/85 backdrop-blur-xl px-4 py-3">
+        <div className="mx-auto max-w-3xl flex items-center justify-between">
+          <BrandLogo size="sm" />
+          <p className="text-xs uppercase tracking-wider text-muted-foreground capitalize">
+            {format(new Date(), "MMMM yyyy", { locale: ptBR })}
+          </p>
         </div>
       </header>
 
-      <div className="mx-auto max-w-lg space-y-4 px-4 pt-4">
-        {cards.map((c) => (
-          <Card key={c.title}>
-            <CardHeader className="pb-2">
-              <div className="flex items-center justify-between">
-                <CardTitle className="text-base font-medium">{c.title}</CardTitle>
-                <c.icon className="h-5 w-5 text-primary" />
+      <div className="mx-auto max-w-3xl space-y-4 px-4 pt-4">
+        {/* Hero card */}
+        <Card className="overflow-hidden border-border/60 bg-gradient-to-br from-card to-secondary/40">
+          <CardContent className="p-6">
+            <p className="text-xs uppercase tracking-wider text-muted-foreground">Faturamento bruto</p>
+            <p className="mt-1 text-4xl font-bold text-gradient-brand">
+              R$ {grossRevenue.toFixed(2)}
+            </p>
+            <p className="mt-1 text-xs text-muted-foreground">{totalServices} atendimento{totalServices !== 1 ? "s" : ""} concluído{totalServices !== 1 ? "s" : ""}</p>
+          </CardContent>
+        </Card>
+
+        <div className="grid grid-cols-2 gap-3">
+          <Card className="border-border/60">
+            <CardContent className="p-4">
+              <div className="mb-2 flex items-center gap-1.5 text-warning">
+                <AlertCircle className="h-4 w-4" />
+                <p className="text-xs font-semibold uppercase tracking-wider">Pendente</p>
               </div>
-              <p className="text-xs text-muted-foreground capitalize">{c.subtitle}</p>
-            </CardHeader>
-            <CardContent>
-              <div className="flex items-end justify-between">
-                <div>
-                  <p className="text-3xl font-bold text-primary">
-                    R$ {c.total.toFixed(2)}
-                  </p>
-                </div>
-                <div className="flex items-center gap-1 text-sm text-muted-foreground">
-                  <Wallet className="h-4 w-4" />
-                  {c.count} atendimento{c.count !== 1 ? "s" : ""}
-                </div>
-              </div>
+              <p className="text-2xl font-bold">R$ {pending.toFixed(2)}</p>
             </CardContent>
           </Card>
-        ))}
+
+          <Card className="border-border/60">
+            <CardContent className="p-4">
+              <div className="mb-2 flex items-center gap-1.5 text-success">
+                <CheckCircle2 className="h-4 w-4" />
+                <p className="text-xs font-semibold uppercase tracking-wider">Recebido</p>
+              </div>
+              <p className="text-2xl font-bold">R$ {(grossRevenue - pending).toFixed(2)}</p>
+            </CardContent>
+          </Card>
+        </div>
+
+        <Card className="border-border/60">
+          <CardContent className="p-4">
+            <div className="mb-3 flex items-center gap-2">
+              <TrendingUp className="h-4 w-4 text-primary" />
+              <p className="text-sm font-semibold">Receita por dia</p>
+            </div>
+            <ResponsiveContainer width="100%" height={220}>
+              <BarChart data={chartData}>
+                <defs>
+                  <linearGradient id="brandBar" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor="hsl(var(--primary-glow))" />
+                    <stop offset="100%" stopColor="hsl(var(--primary))" />
+                  </linearGradient>
+                </defs>
+                <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" vertical={false} />
+                <XAxis dataKey="day" tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 10 }} axisLine={false} tickLine={false} />
+                <YAxis tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 10 }} axisLine={false} tickLine={false} width={36} />
+                <Tooltip
+                  cursor={{ fill: "hsl(var(--secondary))" }}
+                  contentStyle={{ background: "hsl(var(--card))", border: "1px solid hsl(var(--border))", borderRadius: 8, fontSize: 12 }}
+                  formatter={(v: any) => [`R$ ${Number(v).toFixed(2)}`, "Receita"]}
+                  labelFormatter={(l) => `Dia ${l}`}
+                />
+                <Bar dataKey="value" fill="url(#brandBar)" radius={[6, 6, 0, 0]} />
+              </BarChart>
+            </ResponsiveContainer>
+          </CardContent>
+        </Card>
       </div>
     </div>
   );

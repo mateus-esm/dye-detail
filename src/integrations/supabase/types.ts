@@ -21,8 +21,13 @@ export type Database = {
           client_id: string | null
           client_name: string
           created_at: string
+          duration_min: number | null
           id: string
+          observations: string | null
+          payment_status: string
+          photo_url: string | null
           price: number
+          satisfaction: number | null
           service: string
           status: string
           updated_at: string
@@ -34,8 +39,13 @@ export type Database = {
           client_id?: string | null
           client_name: string
           created_at?: string
+          duration_min?: number | null
           id?: string
+          observations?: string | null
+          payment_status?: string
+          photo_url?: string | null
           price?: number
+          satisfaction?: number | null
           service: string
           status?: string
           updated_at?: string
@@ -47,8 +57,13 @@ export type Database = {
           client_id?: string | null
           client_name?: string
           created_at?: string
+          duration_min?: number | null
           id?: string
+          observations?: string | null
+          payment_status?: string
+          photo_url?: string | null
           price?: number
+          satisfaction?: number | null
           service?: string
           status?: string
           updated_at?: string
