@@ -10,6 +10,7 @@ import AppointmentForm from "@/components/AppointmentForm";
 import AppointmentSheet from "@/components/AppointmentSheet";
 import ServiceLogSheet from "@/components/ServiceLogSheet";
 import { BrandLogo } from "@/components/BrandLogo";
+import { ThemeToggle } from "@/components/ThemeToggle";
 import { cn } from "@/lib/utils";
 
 type View = "day" | "week" | "month";
@@ -99,6 +100,7 @@ const Index = () => {
                 <span className="text-xs font-semibold">R$ {dailyTotal.toFixed(2)}</span>
                 <span className="text-[10px] uppercase tracking-wider text-muted-foreground">hoje</span>
               </div>
+              <ThemeToggle />
               <Button onClick={signOut} variant="ghost" size="icon" className="h-8 w-8">
                 <LogOut className="h-4 w-4" />
               </Button>
