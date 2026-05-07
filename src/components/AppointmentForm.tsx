@@ -30,6 +30,8 @@ const AppointmentForm = ({ open, onOpenChange, onSuccess, appointment, selectedD
   const [time, setTime] = useState("");
   const [service, setService] = useState("");
   const [price, setPrice] = useState("");
+  const [date, setDate] = useState(selectedDate);
+  const [duration, setDuration] = useState("30");
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -41,15 +43,19 @@ const AppointmentForm = ({ open, onOpenChange, onSuccess, appointment, selectedD
         setTime(appointment.appointment_time?.slice(0, 5) || "");
         setService(appointment.service);
         setPrice(String(appointment.price));
+        setDate(appointment.appointment_date);
+        setDuration(String(appointment.duration_min || 30));
       } else {
         setClientId("");
         setClientName("");
         setTime("");
         setService("");
         setPrice("");
+        setDate(selectedDate);
+        setDuration("30");
       }
     }
-  }, [open, appointment, user]);
+  }, [open, appointment, user, selectedDate]);
 
   const fetchClients = async () => {
     const { data } = await supabase.from("clients").select("id, name, phone").order("name");
@@ -71,10 +77,11 @@ const AppointmentForm = ({ open, onOpenChange, onSuccess, appointment, selectedD
       user_id: user.id,
       client_id: clientId || null,
       client_name: clientName,
-      appointment_date: selectedDate,
+      appointment_date: date,
       appointment_time: time,
       service,
       price: parseFloat(price) || 0,
+      duration_min: parseInt(duration) || 30,
     };
 
     if (appointment) {
@@ -131,6 +138,16 @@ const AppointmentForm = ({ open, onOpenChange, onSuccess, appointment, selectedD
           <div className="space-y-2">
             <Label>Horário</Label>
             <Input type="time" value={time} onChange={(e) => setTime(e.target.value)} required />
+          </div>
+          <div className="grid grid-cols-2 gap-3">
+            <div className="space-y-2">
+              <Label>Data</Label>
+              <Input type="date" value={date} onChange={(e) => setDate(e.target.value)} required />
+            </div>
+            <div className="space-y-2">
+              <Label>Duração (min)</Label>
+              <Input type="number" min="5" step="5" value={duration} onChange={(e) => setDuration(e.target.value)} required />
+            </div>
           </div>
           <div className="space-y-2">
             <Label>Serviço</Label>
