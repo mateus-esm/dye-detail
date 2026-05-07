@@ -23,7 +23,7 @@ export const BrandLogo = ({ className, size = "md" }: BrandLogoProps) => {
         </span>
       </div>
       <div className="leading-none">
-        <p className={cn("font-bold tracking-tight", s.text)}>
+        <p className={cn("font-display tracking-tight", s.text)}>
           Duda <span className="text-gradient-brand">Hair</span>
         </p>
         {size !== "sm" && (
