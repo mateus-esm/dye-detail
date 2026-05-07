@@ -20,6 +20,7 @@ export type Database = {
           appointment_time: string
           client_id: string | null
           client_name: string
+          client_phone: string | null
           created_at: string
           duration_min: number | null
           id: string
@@ -38,6 +39,7 @@ export type Database = {
           appointment_time: string
           client_id?: string | null
           client_name: string
+          client_phone?: string | null
           created_at?: string
           duration_min?: number | null
           id?: string
@@ -56,6 +58,7 @@ export type Database = {
           appointment_time?: string
           client_id?: string | null
           client_name?: string
+          client_phone?: string | null
           created_at?: string
           duration_min?: number | null
           id?: string
@@ -120,7 +123,15 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      get_public_booked_slots: {
+        Args: {
+          booking_user_id: string
+          booking_date: string
+        }
+        Returns: {
+          appointment_time: string
+        }[]
+      }
     }
     Enums: {
       [_ in never]: never

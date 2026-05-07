@@ -9,6 +9,7 @@ import Index from "./pages/Index";
 import Clients from "./pages/Clients";
 import Returns from "./pages/Returns";
 import Financial from "./pages/Financial";
+import Booking from "./pages/Booking";
 import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
 import BottomNav from "./components/BottomNav";
@@ -49,6 +50,7 @@ const App = () => (
           <AuthProvider>
           <Routes>
             <Route path="/auth" element={<AuthRoute><Auth /></AuthRoute>} />
+            <Route path="/agendar" element={<Booking />} />
             <Route path="/" element={<ProtectedRoute><AppLayout><Index /></AppLayout></ProtectedRoute>} />
             <Route path="/clientes" element={<ProtectedRoute><AppLayout><Clients /></AppLayout></ProtectedRoute>} />
             <Route path="/retornos" element={<ProtectedRoute><AppLayout><Returns /></AppLayout></ProtectedRoute>} />

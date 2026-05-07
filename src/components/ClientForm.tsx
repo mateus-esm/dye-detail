@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { toast } from "@/hooks/use-toast";
 
 interface ClientFormProps {
@@ -70,11 +70,11 @@ const ClientForm = ({ open, onOpenChange, onSuccess, client }: ClientFormProps) 
   };
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-sm">
-        <DialogHeader>
-          <DialogTitle>{client ? "Editar Cliente" : "Novo Cliente"}</DialogTitle>
-        </DialogHeader>
+    <Sheet open={open} onOpenChange={onOpenChange}>
+      <SheetContent side="bottom" className="h-[88vh] overflow-y-auto rounded-t-3xl border-border/60 sm:mx-auto sm:max-w-md">
+        <SheetHeader className="text-left">
+          <SheetTitle>{client ? "Editar cliente" : "Novo cliente"}</SheetTitle>
+        </SheetHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
             <Label>Nome *</Label>
@@ -100,8 +100,8 @@ const ClientForm = ({ open, onOpenChange, onSuccess, client }: ClientFormProps) 
             {loading ? "Salvando..." : client ? "Salvar" : "Cadastrar"}
           </Button>
         </form>
-      </DialogContent>
-    </Dialog>
+      </SheetContent>
+    </Sheet>
   );
 };
 

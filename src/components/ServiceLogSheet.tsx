@@ -1,24 +1,25 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from "@/components/ui/sheet";
-import { Star, Upload, Loader2 } from "lucide-react";
+import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet";
+import { CheckCircle2, Clock3, Loader2, Star, Upload } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 
 interface Props {
   open: boolean;
-  onOpenChange: (o: boolean) => void;
+  onOpenChange: (open: boolean) => void;
   appointment: any;
   onSuccess: () => void;
 }
 
 const ServiceLogSheet = ({ open, onOpenChange, appointment, onSuccess }: Props) => {
   const { user } = useAuth();
+  const [service, setService] = useState("");
   const [duration, setDuration] = useState("30");
   const [price, setPrice] = useState("");
   const [paymentStatus, setPaymentStatus] = useState<"pago" | "pendente">("pago");
@@ -29,22 +30,22 @@ const ServiceLogSheet = ({ open, onOpenChange, appointment, onSuccess }: Props) 
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    if (open && appointment) {
-      setDuration(String(appointment.duration_min || 30));
-      setPrice(String(appointment.price || 0));
-      setPaymentStatus(appointment.payment_status || "pago");
-      setSatisfaction(appointment.satisfaction || 5);
-      setObservations(appointment.observations || "");
-      setPhotoPreview(appointment.photo_url || null);
-      setPhotoFile(null);
-    }
+    if (!open || !appointment) return;
+    setService(appointment.service || "");
+    setDuration(String(appointment.duration_min || 30));
+    setPrice(String(appointment.price || 0));
+    setPaymentStatus(appointment.payment_status || "pago");
+    setSatisfaction(appointment.satisfaction || 5);
+    setObservations(appointment.observations || "");
+    setPhotoPreview(appointment.photo_url || null);
+    setPhotoFile(null);
   }, [open, appointment]);
 
-  const handlePhoto = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const f = e.target.files?.[0];
-    if (!f) return;
-    setPhotoFile(f);
-    setPhotoPreview(URL.createObjectURL(f));
+  const handlePhoto = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+    setPhotoFile(file);
+    setPhotoPreview(URL.createObjectURL(file));
   };
 
   const handleSubmit = async () => {
@@ -55,11 +56,12 @@ const ServiceLogSheet = ({ open, onOpenChange, appointment, onSuccess }: Props) 
     if (photoFile) {
       const ext = photoFile.name.split(".").pop();
       const path = `${user.id}/${appointment.id}-${Date.now()}.${ext}`;
-      const { error: upErr } = await supabase.storage
+      const { error: uploadError } = await supabase.storage
         .from("service-photos")
         .upload(path, photoFile, { upsert: true });
-      if (upErr) {
-        toast.error("Erro ao enviar foto", { description: upErr.message });
+
+      if (uploadError) {
+        toast.error("Erro ao enviar foto", { description: uploadError.message });
       } else {
         const { data } = supabase.storage.from("service-photos").getPublicUrl(path);
         photo_url = data.publicUrl;
@@ -70,6 +72,7 @@ const ServiceLogSheet = ({ open, onOpenChange, appointment, onSuccess }: Props) 
       .from("appointments")
       .update({
         status: "atendido",
+        service: service.trim() || appointment.service,
         duration_min: parseInt(duration) || 30,
         price: parseFloat(price) || 0,
         payment_status: paymentStatus,
@@ -84,7 +87,8 @@ const ServiceLogSheet = ({ open, onOpenChange, appointment, onSuccess }: Props) 
       toast.error("Erro ao registrar", { description: error.message });
       return;
     }
-    toast.success("Atendimento registrado!");
+
+    toast.success("Atendimento registrado");
     onOpenChange(false);
     onSuccess();
   };
@@ -93,63 +97,72 @@ const ServiceLogSheet = ({ open, onOpenChange, appointment, onSuccess }: Props) 
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent side="bottom" className="h-[92vh] overflow-y-auto rounded-t-3xl border-border/60 sm:max-w-lg sm:mx-auto">
+      <SheetContent side="bottom" className="h-[92vh] overflow-y-auto rounded-t-3xl border-border/60 sm:mx-auto sm:max-w-lg">
         <SheetHeader className="text-left">
-          <SheetTitle>Registrar atendimento</SheetTitle>
+          <SheetTitle>Checkout do atendimento</SheetTitle>
           <SheetDescription>
-            {appointment.client_name} • {appointment.service}
+            Confirme servico, valor final e cobranca de {appointment.client_name}.
           </SheetDescription>
         </SheetHeader>
 
         <div className="mt-6 space-y-5">
+          <div className="space-y-2">
+            <Label className="text-xs uppercase tracking-wider text-muted-foreground">Servico executado</Label>
+            <Input value={service} onChange={(event) => setService(event.target.value)} required />
+          </div>
+
           <div className="grid grid-cols-2 gap-3">
             <div className="space-y-2">
-              <Label className="text-xs uppercase tracking-wider text-muted-foreground">Duração (min)</Label>
-              <Input type="number" min="1" value={duration} onChange={(e) => setDuration(e.target.value)} />
+              <Label className="text-xs uppercase tracking-wider text-muted-foreground">Duracao (min)</Label>
+              <Input type="number" min="1" value={duration} onChange={(event) => setDuration(event.target.value)} />
             </div>
             <div className="space-y-2">
-              <Label className="text-xs uppercase tracking-wider text-muted-foreground">Valor (R$)</Label>
-              <Input type="number" step="0.01" value={price} onChange={(e) => setPrice(e.target.value)} />
+              <Label className="text-xs uppercase tracking-wider text-muted-foreground">Valor final (R$)</Label>
+              <Input type="number" step="0.01" value={price} onChange={(event) => setPrice(event.target.value)} />
             </div>
           </div>
 
           <div className="space-y-2">
             <Label className="text-xs uppercase tracking-wider text-muted-foreground">Pagamento</Label>
             <div className="grid grid-cols-2 gap-2">
-              {(["pago", "pendente"] as const).map((s) => (
+              {(["pago", "pendente"] as const).map((status) => (
                 <button
-                  key={s}
+                  key={status}
                   type="button"
-                  onClick={() => setPaymentStatus(s)}
+                  onClick={() => setPaymentStatus(status)}
                   className={cn(
-                    "rounded-lg border-2 px-3 py-2.5 text-sm font-medium capitalize transition-all",
-                    paymentStatus === s
-                      ? s === "pago"
+                    "flex items-center justify-center gap-2 rounded-lg border-2 px-3 py-2.5 text-sm font-medium capitalize transition-all",
+                    paymentStatus === status
+                      ? status === "pago"
                         ? "border-success bg-success/15 text-success"
                         : "border-warning bg-warning/15 text-warning"
                       : "border-border bg-secondary/40 text-muted-foreground"
                   )}
                 >
-                  {s === "pago" ? "✓ Pago" : "⏱ Pendente"}
+                  {status === "pago" ? <CheckCircle2 className="h-4 w-4" /> : <Clock3 className="h-4 w-4" />}
+                  {status === "pago" ? "Pago" : "Pendente"}
                 </button>
               ))}
             </div>
+            <p className="text-xs leading-relaxed text-muted-foreground">
+              Pagamento pendente nao bloqueia o ciclo operacional: o atendimento entra no historico e a cobranca fica registrada para o financeiro.
+            </p>
           </div>
 
           <div className="space-y-2">
-            <Label className="text-xs uppercase tracking-wider text-muted-foreground">Satisfação</Label>
+            <Label className="text-xs uppercase tracking-wider text-muted-foreground">Satisfacao</Label>
             <div className="flex items-center gap-2">
-              {[1, 2, 3, 4, 5].map((n) => (
+              {[1, 2, 3, 4, 5].map((score) => (
                 <button
-                  key={n}
+                  key={score}
                   type="button"
-                  onClick={() => setSatisfaction(n)}
+                  onClick={() => setSatisfaction(score)}
                   className="transition-transform hover:scale-110"
                 >
                   <Star
                     className={cn(
                       "h-8 w-8",
-                      n <= satisfaction ? "fill-accent text-accent" : "text-muted"
+                      score <= satisfaction ? "fill-accent text-accent" : "text-muted"
                     )}
                   />
                 </button>
@@ -158,8 +171,8 @@ const ServiceLogSheet = ({ open, onOpenChange, appointment, onSuccess }: Props) 
           </div>
 
           <div className="space-y-2">
-            <Label className="text-xs uppercase tracking-wider text-muted-foreground">Foto do corte</Label>
-            <label className="relative flex aspect-video cursor-pointer items-center justify-center overflow-hidden rounded-lg border-2 border-dashed border-border bg-secondary/30 hover:border-primary/50 transition-colors">
+            <Label className="text-xs uppercase tracking-wider text-muted-foreground">Foto do atendimento</Label>
+            <label className="relative flex aspect-video cursor-pointer items-center justify-center overflow-hidden rounded-lg border-2 border-dashed border-border bg-secondary/30 transition-colors hover:border-primary/50">
               {photoPreview ? (
                 <img src={photoPreview} alt="Preview" className="h-full w-full object-cover" />
               ) : (
@@ -173,11 +186,11 @@ const ServiceLogSheet = ({ open, onOpenChange, appointment, onSuccess }: Props) 
           </div>
 
           <div className="space-y-2">
-            <Label className="text-xs uppercase tracking-wider text-muted-foreground">Observações</Label>
+            <Label className="text-xs uppercase tracking-wider text-muted-foreground">Observacoes</Label>
             <Textarea
-              placeholder="Ex: degradê 1, barba aparada..."
+              placeholder="Ex: finalizacao, ajustes, preferencias..."
               value={observations}
-              onChange={(e) => setObservations(e.target.value)}
+              onChange={(event) => setObservations(event.target.value)}
               rows={3}
             />
           </div>

@@ -9,7 +9,7 @@ import { Plus, ChevronLeft, ChevronRight, LogOut, DollarSign, Clock } from "luci
 import AppointmentForm from "@/components/AppointmentForm";
 import AppointmentSheet from "@/components/AppointmentSheet";
 import ServiceLogSheet from "@/components/ServiceLogSheet";
-import { BrandLogo } from "@/components/BrandLogo";
+import { BrandLogo, SoloVenturesBadge } from "@/components/BrandLogo";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { cn } from "@/lib/utils";
 
@@ -93,7 +93,10 @@ const Index = () => {
       <header className="sticky top-0 z-40 border-b border-border/60 bg-background/85 backdrop-blur-xl">
         <div className="mx-auto max-w-3xl px-4 py-3">
           <div className="flex items-center justify-between">
-            <BrandLogo size="sm" />
+            <div className="flex items-center gap-3">
+              <BrandLogo size="sm" />
+              <SoloVenturesBadge className="hidden origin-left scale-90 sm:flex" />
+            </div>
             <div className="flex items-center gap-2">
               <div className="hidden sm:flex items-center gap-1.5 rounded-full border border-border bg-card px-3 py-1.5">
                 <DollarSign className="h-3.5 w-3.5 text-primary" />

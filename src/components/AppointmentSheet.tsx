@@ -50,7 +50,7 @@ const AppointmentSheet = ({ open, onOpenChange, appointment, onComplete, onEdit,
   };
 
   const notify = () => {
-    const phone = client?.phone?.replace(/\D/g, "");
+    const phone = (client?.phone || appointment.client_phone)?.replace(/\D/g, "");
     if (!phone) return toast.error("Cliente sem telefone");
     const fullPhone = phone.startsWith("55") ? phone : `55${phone}`;
     const msg = encodeURIComponent(
@@ -102,10 +102,10 @@ const AppointmentSheet = ({ open, onOpenChange, appointment, onComplete, onEdit,
             </div>
           )}
 
-          {client?.phone && (
+          {(client?.phone || appointment.client_phone) && (
             <div className="flex items-center gap-2 rounded-lg bg-secondary/40 p-3">
               <Phone className="h-4 w-4 text-muted-foreground" />
-              <span className="text-sm">{client.phone}</span>
+              <span className="text-sm">{client?.phone || appointment.client_phone}</span>
             </div>
           )}
 

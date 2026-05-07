@@ -5,9 +5,9 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { MessageCircle, Copy, Clock, AlertTriangle } from "lucide-react";
+import { MessageCircle, Copy, Clock } from "lucide-react";
 import { toast } from "sonner";
-import { BrandLogo } from "@/components/BrandLogo";
+import { BrandLogo, SoloVenturesBadge } from "@/components/BrandLogo";
 import { cn } from "@/lib/utils";
 
 interface ClientReturn {
@@ -81,8 +81,11 @@ const Returns = () => {
   return (
     <div className="pb-24">
       <header className="sticky top-0 z-40 border-b border-border/60 bg-background/85 backdrop-blur-xl px-4 py-3">
-        <div className="mx-auto max-w-3xl flex items-center justify-between">
-          <BrandLogo size="sm" />
+        <div className="mx-auto max-w-3xl flex items-center justify-between gap-3">
+          <div className="flex items-center gap-3">
+            <BrandLogo size="sm" />
+            <SoloVenturesBadge className="hidden origin-left scale-90 sm:flex" />
+          </div>
           <div className="text-right">
             <p className="text-2xl font-bold text-gradient-brand">{returns.length}</p>
             <p className="text-[10px] uppercase tracking-wider text-muted-foreground">retornos</p>

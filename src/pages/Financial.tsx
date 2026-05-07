@@ -6,7 +6,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { Card, CardContent } from "@/components/ui/card";
 import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid } from "recharts";
 import { TrendingUp, AlertCircle, CheckCircle2 } from "lucide-react";
-import { BrandLogo } from "@/components/BrandLogo";
+import { BrandLogo, SoloVenturesBadge } from "@/components/BrandLogo";
 
 const Financial = () => {
   const { user } = useAuth();
@@ -43,8 +43,11 @@ const Financial = () => {
   return (
     <div className="pb-24">
       <header className="sticky top-0 z-40 border-b border-border/60 bg-background/85 backdrop-blur-xl px-4 py-3">
-        <div className="mx-auto max-w-3xl flex items-center justify-between">
-          <BrandLogo size="sm" />
+        <div className="mx-auto max-w-3xl flex items-center justify-between gap-3">
+          <div className="flex items-center gap-3">
+            <BrandLogo size="sm" />
+            <SoloVenturesBadge className="hidden origin-left scale-90 sm:flex" />
+          </div>
           <p className="text-xs uppercase tracking-wider text-muted-foreground capitalize">
             {format(new Date(), "MMMM yyyy", { locale: ptBR })}
           </p>

@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { toast } from "@/hooks/use-toast";
 
 interface AppointmentFormProps {
@@ -100,11 +100,11 @@ const AppointmentForm = ({ open, onOpenChange, onSuccess, appointment, selectedD
   };
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-sm">
-        <DialogHeader>
-          <DialogTitle>{appointment ? "Editar Agendamento" : "Novo Agendamento"}</DialogTitle>
-        </DialogHeader>
+    <Sheet open={open} onOpenChange={onOpenChange}>
+      <SheetContent side="bottom" className="h-[90vh] overflow-y-auto rounded-t-3xl border-border/60 sm:mx-auto sm:max-w-md">
+        <SheetHeader className="text-left">
+          <SheetTitle>{appointment ? "Editar agendamento" : "Novo agendamento"}</SheetTitle>
+        </SheetHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
             <Label>Cliente</Label>
@@ -161,8 +161,8 @@ const AppointmentForm = ({ open, onOpenChange, onSuccess, appointment, selectedD
             {loading ? "Salvando..." : appointment ? "Salvar" : "Agendar"}
           </Button>
         </form>
-      </DialogContent>
-    </Dialog>
+      </SheetContent>
+    </Sheet>
   );
 };
 
