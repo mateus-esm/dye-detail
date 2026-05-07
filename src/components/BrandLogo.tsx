@@ -1,4 +1,5 @@
 import { cn } from "@/lib/utils";
+import soloLogo from "@/assets/solo-ventures-logo.png";
 
 interface BrandLogoProps {
   className?: string;
@@ -36,11 +37,9 @@ export const BrandLogo = ({ className, size = "md" }: BrandLogoProps) => {
 };
 
 export const SoloVenturesBadge = ({ className }: { className?: string }) => (
-  <div className={cn("flex items-center justify-center gap-1.5 text-[10px] uppercase tracking-[0.25em] text-muted-foreground/70", className)}>
-    <span>powered by</span>
-    <span className="font-semibold text-foreground/80">
-      Solo<span className="text-gradient-brand">Ventures</span>
-    </span>
+  <div className={cn("flex flex-col items-center gap-1.5 opacity-70", className)}>
+    <span className="text-[9px] uppercase tracking-[0.3em] text-muted-foreground">powered by</span>
+    <img src={soloLogo} alt="Solo Ventures" className="h-5 w-auto dark:invert-0 dark:opacity-90" />
   </div>
 );
 
